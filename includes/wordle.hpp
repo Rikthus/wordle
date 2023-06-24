@@ -12,6 +12,8 @@
 #define GREEN "\033[1;32m"
 #define YELLOW "\033[1;33m"
 #define GREY "\033[1;30m"
+#define BLUE "\033[36m"
+#define RED "\033[31m"
 #define END "\033[0m"
 
 using namespace std;

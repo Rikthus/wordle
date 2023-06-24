@@ -17,7 +17,7 @@ static	void	printWelcome(void)
 		"#####################################################################################"
 	};
 	for (int i = 0; i < 12; i++)
-		std::cout << welcomeStr[i] << endl;
+		std::cout << BLUE << welcomeStr[i] << END << endl;
 }
 
 static	void	printRules(unsigned int dictSize)
@@ -164,7 +164,7 @@ static	void	startGame(string wordToFind)
 	if (cin.eof())
 		return;
 	cin.clear();
-	cout << endl << "The mode is now: " << mode << endl << "AND THE GAME BEGINS!" << endl << endl;
+	cout << endl << "The mode is now: " << mode << endl << BLUE << "AND THE GAME BEGINS!" << END << endl << endl;
 	cout << "=>   ";
 	while (nbGuess < 6 && getline(cin, test) && !cin.eof())
 	{
@@ -199,9 +199,9 @@ static	void	startGame(string wordToFind)
 	}
 	cout << endl << endl;
 	if (nbGuess == 6 && test != wordToFind)
-		cout << "You have been defeated by the WORDLE:    " + wordToFind << endl;
+		cout << RED << "You have been defeated by the WORDLE:    " + wordToFind << END << endl;
 	else if (test == wordToFind)
-		cout << "Congratulations you have found the WORDLE in " + to_string(nbGuess) + " try!";
+		cout << BLUE << "Congratulations you have found the WORDLE in " + to_string(nbGuess) + " try!" << END << endl;
 }
 
 int	main(int argc, char **argv)
