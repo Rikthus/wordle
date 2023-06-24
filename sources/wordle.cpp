@@ -84,20 +84,20 @@ static	unsigned	int	parseDictionnary(ifstream &dict)
 
 static	string	generateWord(unsigned	int dictSize, ifstream &dict)
 {
-	unsigned	int const		randMin = 1;
+	// unsigned	int const		randMin = 1;
 	unsigned	int const		randMax = dictSize;
 	unsigned	int				wordIndex;
 	string						word;
 
 	random_device			 	rd;
 	mt19937						gen(rd());
-	uniform_int_distribution<>	distrib(randMin, randMax);
+	uniform_int_distribution<>	distrib(randMax, randMax);
 
 	wordIndex = distrib(gen);
 	for (unsigned int i = 0; i < wordIndex; i++)
 	{
 		getline(dict, word);
-		if (!dict.good() || word.empty())
+		if (dict.fail() || word.empty())
 			closeAndThrow(dict, "Error: error while reading dictionnary file");
 	}
 	return (word);
