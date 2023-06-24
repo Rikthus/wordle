@@ -3,6 +3,7 @@
 #include <string>
 #include <algorithm>
 #include <random>
+#include <limits>
 #include <sys/stat.h>
 
 #define MAX_DICT_SIZE 100000
@@ -14,3 +15,6 @@
 #define END "\033[0m"
 
 using namespace std;
+using std::cout;
+using std::cin;
+using std::endl;

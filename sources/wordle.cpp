@@ -103,33 +103,77 @@ static	string	generateWord(unsigned	int dictSize, ifstream &dict)
 	return (word);
 }
 
+static	void	printHelp(string test, string word)
+{
+	static	vector<char>	validLetters;
+	static	vector<char>	invalidLetters;
+
+	for (unsigned int i = 0; i < test.size(); i++)
+	{
+		if (count(word.begin(), word.end(), test[i]) > 0)
+		{
+			if (count(validLetters.begin(), validLetters.end(), test[i]) == 0)
+				validLetters.push_back(test[i]);
+		}
+		else
+		{
+			if (count(invalidLetters.begin(), invalidLetters.end(), test[i]) == 0)
+				invalidLetters.push_back(test[i]);
+		}
+	}
+
+	cout << endl;
+	cout << "How many letters in the WORDLE =>   ";
+	for (unsigned int i = 0; i < test.size(); i++)
+		cout << test[i] << ": " << count(word.begin(), word.end(), test[i]) << "  ";
+	cout << endl;
+	cout << "GOOD letters =>   ";
+	for (unsigned int i = 0; i < validLetters.size(); i++)
+		cout << validLetters[i] << "  ";
+	cout << endl;
+	cout << "BAD letters =>   ";
+	for (unsigned int i = 0; i < invalidLetters.size(); i++)
+		cout << invalidLetters[i] << "  ";
+}
+
 static	void	printLetters(string test, string word)
 {
 	for (unsigned int i = 0; i < test.size(); i++)
 	{
 		if (test[i] == word[i])
-			std::cout << GREEN << test[i] << END;
+			cout << GREEN << test[i] << END;
 		else if (count(word.begin(), word.end(), test[i]) == 0)
-			std::cout << GREY << test[i] << END;
+			cout << GREY << test[i] << END;
 		else
-			std::cout << YELLOW << test[i] << END;
+			cout << YELLOW << test[i] << END;
 	}
 }
 
 static	void	startGame(string wordToFind)
 {
 	int		nbGuess = 0;
-	string	wordTry;
+	string	mode;
+	string	test;
 
-	while (nbGuess < 6 && getline(cin, wordTry) && !cin.eof())
+	cout << "Enter your preferred mode:   easy | normal" << endl;
+	while (getline(cin, mode) && !cin.eof())
 	{
-		nbGuess++;
-		if (wordTry.empty() || wordTry.length() != 5)
+		if (mode == "easy" || mode == "normal")
+			break;
+	}
+	if (cin.eof())
+		return;
+	cin.clear();
+	cout << endl << "The mode is now: " << mode << endl << "AND THE GAME BEGINS!" << endl << endl;
+	cout << "=>   ";
+	while (nbGuess < 6 && getline(cin, test) && !cin.eof())
+	{
+		if (test.empty() || test.size() != 5)
 		{
 			cout << "Please enter a valid WORDLE" << endl;
 			continue;
 		}
-		for (char c: wordTry)
+		for (char c: test)
 		{
 			if (!islower(c))
 			{
@@ -138,18 +182,25 @@ static	void	startGame(string wordToFind)
 			}
 		}
 
-		cout << endl << endl;
+		nbGuess++;
+		cout << endl;
 		cout << "WORDLE:       ";
-		printLetters(wordTry, wordToFind);
+		printLetters(test, wordToFind);
 		cout << endl;
 		cout << "guesses: " + to_string(nbGuess) << endl;
-		if (wordTry == wordToFind)
+		if (test == wordToFind)
 			break;
+		if (mode == "easy")
+			printHelp(test, wordToFind);
+		cout << endl;
+		cout << endl;
+		cout << endl;
+		cout << "=>   ";
 	}
 	cout << endl << endl;
-	if (nbGuess == 6 && wordTry != wordToFind)
+	if (nbGuess == 6 && test != wordToFind)
 		cout << "You have been defeated by the WORDLE:    " + wordToFind << endl;
-	else if (wordTry == wordToFind)
+	else if (test == wordToFind)
 		cout << "Congratulations you have found the WORDLE in " + to_string(nbGuess) + " try!";
 }
 
