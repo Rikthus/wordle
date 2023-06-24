@@ -2,6 +2,8 @@
 #include <fstream>
 #include <string>
 #include <algorithm>
+#include <vector>
+#include <map>
 #include <random>
 #include <limits>
 #include <sys/stat.h>

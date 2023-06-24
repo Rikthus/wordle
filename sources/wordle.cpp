@@ -54,7 +54,7 @@ static	ifstream	openDictionnary(void)
 	return (dict);
 }
 
-static	unsigned	int	parseDictionnary(ifstream &dict)
+static	unsigned	int	parseDictionnary(ifstream &dict, vector<string> &wordsPool)
 {
 	unsigned	int	wordCount = 0;
 	string			word;
@@ -73,6 +73,7 @@ static	unsigned	int	parseDictionnary(ifstream &dict)
 			if (!islower(word[i]))
 				closeAndThrow(dict, "Error: dictionnary entry " + to_string(wordCount) + " does not contain only lowercase letters");
 		}
+		wordsPool.push_back(word);
 	}
 	if (wordCount < MIN_DICT_SIZE)
 		closeAndThrow(dict, "Error: dictionnary has less than " + to_string(MIN_DICT_SIZE) + " entries");
@@ -138,18 +139,40 @@ static	void	printHelp(string test, string word)
 
 static	void	printLetters(string test, string word)
 {
+	map<char, int>	letterCount;
+	map<char, int>	letterColored;
+
+	for (unsigned int i = 0; i < word.size(); i++)
+		letterCount[word[i]] = count(word.begin(), word.end(), word[i]);
 	for (unsigned int i = 0; i < test.size(); i++)
 	{
 		if (test[i] == word[i])
+		{
+			if (letterColored.find(test[i]) != letterColored.end())
+				letterColored.find(test[i])->second += 1;
+			else
+				letterColored[test[i]] = 1;
 			cout << GREEN << test[i] << END;
+		}
 		else if (count(word.begin(), word.end(), test[i]) == 0)
 			cout << GREY << test[i] << END;
 		else
-			cout << YELLOW << test[i] << END;
+		{
+			if (letterColored.find(test[i]) != letterColored.end() && letterColored.find(test[i])->second >= letterCount.find(test[i])->second)
+				cout << GREY << test[i] << END;
+			else
+			{
+				if (letterColored.find(test[i]) != letterColored.end())
+					letterColored.find(test[i])->second += 1;
+				else
+					letterColored[test[i]] = 1;
+				cout << YELLOW << test[i] << END;
+			}
+		}
 	}
 }
 
-static	void	startGame(string wordToFind)
+static	void	startGame(string wordToFind, const vector<string> &wordsPool)
 {
 	int		nbGuess = 0;
 	string	mode;
@@ -166,22 +189,29 @@ static	void	startGame(string wordToFind)
 	cin.clear();
 	cout << endl << "The mode is now: " << mode << endl << BLUE << "AND THE GAME BEGINS!" << END << endl << endl;
 	cout << "=>   ";
-	while (nbGuess < 6 && getline(cin, test) && !cin.eof())
+	while (nbGuess < 6 && getline(cin, test) && !cin.eof() && test != wordToFind)
 	{
 		if (test.empty() || test.size() != 5)
 		{
-			cout << "Please enter a valid WORDLE" << endl;
+			cout << "Please enter a valid WORDLE" << endl << endl << endl;
+			cout << "=>   ";
 			continue;
 		}
 		for (char c: test)
 		{
 			if (!islower(c))
 			{
-				cout << "Please enter a valid WORDLE" << endl;
+				cout << "Please enter a valid WORDLE" << endl << endl << endl;
+				cout << "=>   ";
 				continue;
 			}
 		}
-
+		if (find(wordsPool.begin(), wordsPool.end(), test) == wordsPool.end())
+		{
+			cout << "WORDLE not in the WORDLE pool" << endl << endl << endl;
+			cout << "=>   ";
+			continue;
+		}
 		nbGuess++;
 		cout << endl;
 		cout << "WORDLE:       ";
@@ -215,14 +245,15 @@ int	main(int argc, char **argv)
 	try
 	{
 		ifstream		dict = openDictionnary();
-		unsigned	int	dictSize = parseDictionnary(dict);
+		vector<string>	wordsPool;
+		unsigned	int	dictSize = parseDictionnary(dict, wordsPool);
 		string			wordOfTheDay = generateWord(dictSize, dict);
 
 		dict.close();
 
 		printWelcome();
 		printRules(dictSize);
-		startGame(wordOfTheDay);
+		startGame(wordOfTheDay, wordsPool);
 	}
 	catch	(std::exception &e)
 	{
